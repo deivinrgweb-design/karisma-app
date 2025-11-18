@@ -135,20 +135,51 @@
       cursor: pointer;
     }
     .result {
-      margin-top: 12px;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid rgba(0, 201, 200, 0.4);
-      border-radius: 12px;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: 0.25s ease-out;
-    }
-    .result.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  margin-top: 18px;
+  padding: 12px 10px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(0, 201, 200, 0.4);
+  text-align: center;
+  transform: translateY(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+.result.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.result-message {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.result-message span {
+  color: var(--karisma-turquoise);
+  font-weight: 600;
+}
+
+.result-coupon {
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 201, 200, 0.08);
+  border: 1px dashed rgba(0, 201, 200, 0.5);
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.result-coupon-code {
+  font-weight: 700;
+  color: var(--karisma-turquoise);
+}
+
 
   </style>
 </head>
@@ -180,9 +211,15 @@
       </section>
 
       <section id="result" class="result">
-        <p class="result-message"></p>
-        <p class="result-coupon">Codice sconto: <span class="result-coupon-code"></span></p>
-      </section>
+  <p class="result-message"></p>
+  <p class="result-coupon">
+    Codice sconto: <span class="result-coupon-code"></span>
+  </p>
+  <p class="result-note" style="font-size:0.7rem; opacity:0.7; margin-top:4px;">
+    Mostra questo codice in cassa o inseriscilo al checkout.
+  </p>
+</section>
+
     </div>
   </div>
 
@@ -285,3 +322,4 @@ spinButton.addEventListener("click", () => {
 
 </body>
 </html>
+
