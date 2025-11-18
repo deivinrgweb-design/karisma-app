@@ -201,7 +201,7 @@ const resultCouponCodeEl = document.querySelector(".result-coupon-code");
 const reels = document.querySelectorAll(".reel");
 
 // ----------- LOADING SUL FORM ----------
-phoneForm.addEventListener("submit", async (e) => {
+phoneForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const phone = phoneInput.value.trim();
@@ -211,18 +211,18 @@ phoneForm.addEventListener("submit", async (e) => {
   }
   phoneError.style.display = "none";
 
-  // loading visivo
   const btn = phoneForm.querySelector("button");
   btn.disabled = true;
   btn.textContent = "Caricamento...";
 
-  await fetch(SCRIPT_URL, {
+  // FIXATO: fetch corretto
+  fetch(SCRIPT_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    mode: "no-cors",
     body: JSON.stringify({ phone })
   });
 
-  // vai alla slot
+  // vai alla slot subito
   phoneForm.style.display = "none";
   slotSection.style.display = "block";
 });
@@ -243,13 +243,12 @@ let spinning = false;
 let spinIntervals = [];
 
 spinButton.addEventListener("click", () => {
-  if (spinning) return;   // <-- FIX
+  if (spinning) return;
   spinning = true;
 
   resultBox.classList.remove("visible");
-  spinIntervals = [];     // <-- RESET sicuro
+  spinIntervals = [];
 
-  // avvia animazione rulli
   reels.forEach(reel => {
     reel.classList.add("spinning");
 
@@ -267,7 +266,6 @@ spinButton.addEventListener("click", () => {
   const coupon = COUPON_CODES[Math.floor(Math.random()*COUPON_CODES.length)];
 
   setTimeout(() => {
-    // stop rulli
     spinIntervals.forEach(clearInterval);
     spinIntervals = [];
 
@@ -280,11 +278,10 @@ spinButton.addEventListener("click", () => {
     resultCouponCodeEl.textContent = coupon;
     resultBox.classList.add("visible");
 
-    spinning = false;  // <-- permette di rigirare
+    spinning = false;
   }, 1500);
 });
 </script>
-
 
 </body>
 </html>
