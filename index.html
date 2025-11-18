@@ -108,6 +108,15 @@
       font-size: 2.4rem;
       transition: transform var(--transition-fast);
     }
+    .spinning .symbol {
+      animation: spinAnim 0.15s linear infinite;
+    }
+    @keyframes spinAnim {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
     .controls {
       display: flex;
       flex-direction: column;
@@ -140,6 +149,7 @@
       opacity: 1;
       transform: translateY(0);
     }
+
   </style>
 </head>
 
@@ -155,11 +165,13 @@
     </form>
 
     <div id="slotSection">
+      <p style="text-align:center; margin-top:10px; opacity:0.85;">Premi GIRA per scoprire il tuo premio Karisma</p>
+
       <section class="slot-machine">
         <div class="slot-window">
-          <div class="reel"><span class="symbol">?</span></div>
-          <div class="reel"><span class="symbol">?</span></div>
-          <div class="reel"><span class="symbol">?</span></div>
+          <div class="reel"><span class="symbol">🍒</span></div>
+          <div class="reel"><span class="symbol">⭐</span></div>
+          <div class="reel"><span class="symbol">🍋</span></div>
         </div>
       </section>
 
@@ -174,74 +186,91 @@
     </div>
   </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSgfUt16y8BM2S_U4Y8rS0YcPbihEeJQrWxP0s8Sym6Hp11_K-6j7iN-VsFOX9T0DoNg/exec";
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSgfUt16y8BM2S_U4Y8rS0YcPbihEeJQrWxP0s8Sym6Hp11_K-6j7iN-VsFOX9T0DoNg/exec";
 
-    const phoneForm = document.getElementById("phoneForm");
-    const phoneInput = document.getElementById("phoneInput");
-    const phoneError = document.getElementById("phoneError");
-    const slotSection = document.getElementById("slotSection");
+const phoneForm = document.getElementById("phoneForm");
+const phoneInput = document.getElementById("phoneInput");
+const phoneError = document.getElementById("phoneError");
+const slotSection = document.getElementById("slotSection");
 
-    phoneForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+phoneForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const phone = phoneInput.value.trim();
 
-      const phone = phoneInput.value.trim();
-      if (phone.length < 5) {
-        phoneError.style.display = "block";
-        return;
-      }
-      phoneError.style.display = "none";
+  if (phone.length < 5) {
+    phoneError.style.display = "block";
+    return;
+  }
+  phoneError.style.display = "none";
 
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify({ phone })
-        });
-        phoneForm.style.display = "none";
-        slotSection.style.display = "block";
-      } catch (err) {
-        alert("Errore durante il salvataggio. Riprova.");
-        return;
-      }
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone })
+  });
+
+  phoneForm.style.display = "none";
+  slotSection.style.display = "block";
+});
+
+/* --- SLOT MACHINE --- */
+
+const SYMBOLS = [
+  { name: "Logo Karisma (gadget esclusivo)", icon: "🌀" },
+  { name: "Pallone da calcio Karisma", icon: "⚽️" },
+  { name: "Scarpe sport Karisma", icon: "👟" },
+  { name: "Sconto 10%", icon: "💸" },
+  { name: "Calzettoni tecnici", icon: "🧦" },
+  { name: "Mystery Box Karisma", icon: "🎁" }
+];
+const COUPON_CODES = ["KARISMA10", "KARISMA-SPORT", "KARISMA-TEAM", "WIN-KARISMA", "KARISMA2025"];
+
+const spinButton = document.getElementById("spinButton");
+const resultBox = document.getElementById("result");
+const resultMessageEl = resultBox.querySelector(".result-message");
+const resultCouponCodeEl = resultBox.querySelector(".result-coupon-code");
+const reels = document.querySelectorAll(".reel");
+
+let spinIntervals = [];
+
+spinButton.addEventListener("click", () => {
+  if (spinIntervals.length > 0) return;
+
+  resultBox.classList.remove("visible");
+
+  reels.forEach(reel => {
+    reel.classList.add("spinning");
+
+    const symbolSpan = reel.querySelector(".symbol");
+
+    const interval = setInterval(() => {
+      const randomSymbol = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+      symbolSpan.textContent = randomSymbol.icon;
+    }, 80);
+
+    spinIntervals.push(interval);
+  });
+
+  const winner = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+  const coupon = COUPON_CODES[Math.floor(Math.random()*COUPON_CODES.length)];
+
+  setTimeout(() => {
+    spinIntervals.forEach(i => clearInterval(i));
+    spinIntervals = [];
+
+    reels.forEach(reel => {
+      reel.classList.remove("spinning");
+      reel.querySelector(".symbol").textContent = winner.icon;
     });
 
-    const SYMBOLS = [
-      { name: "Logo Karisma (gadget esclusivo)", icon: "🌀" },
-      { name: "Pallone da calcio Karisma", icon: "⚽️" },
-      { name: "Scarpe sport Karisma", icon: "👟" },
-      { name: "Sconto 10%", icon: "💸" },
-      { name: "Calzettoni tecnici", icon: "🧦" },
-      { name: "Mystery Box Karisma", icon: "🎁" }
-    ];
-    const COUPON_CODES = ["KARISMA10", "KARISMA-SPORT", "KARISMA-TEAM", "WIN-KARISMA", "KARISMA2025"];
+    resultMessageEl.innerHTML = "Hai vinto: <span>" + winner.name + "</span>";
+    resultCouponCodeEl.textContent = coupon;
+    resultBox.classList.add("visible");
 
-    const spinButton = document.getElementById("spinButton");
-    const resultBox = document.getElementById("result");
-    const resultMessageEl = resultBox.querySelector(".result-message");
-    const resultCouponCodeEl = resultBox.querySelector(".result-coupon-code");
-    const reels = document.querySelectorAll(".reel");
+  }, 1500);
+});
+</script>
 
-    let spinning = false;
-
-    spinButton.addEventListener("click", () => {
-      if (spinning) return;
-      spinning = true;
-      resultBox.classList.remove("visible");
-
-      reels.forEach(r => r.querySelector(".symbol").textContent = "🎰");
-
-      const winner = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
-      const coupon = COUPON_CODES[Math.floor(Math.random()*COUPON_CODES.length)];
-
-      setTimeout(() => {
-        reels.forEach(r => r.querySelector(".symbol").textContent = winner.icon);
-        resultMessageEl.innerHTML = "Hai vinto: <span>"+winner.name+"</span>";
-        resultCouponCodeEl.textContent = coupon;
-        resultBox.classList.add("visible");
-        spinning = false;
-      }, 2000);
-    });
-  </script>
 </body>
 </html>
