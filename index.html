@@ -222,8 +222,8 @@
   </div>
 
   <script>
-    // 🔗 Inserisci qui l'URL della tua Web App di Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHxS3QQ63_MebtoBr_v9hDRjVa-EocSL7arKHmPNSF92ema1rtxoNGzeiCwIuncVT3/exec";
+    // 🔗 Inserisci qui l' della tua Web App di Apps Script
+    const SCRIPT_ = "https://script.google.com/macros/s/AKfycbwHxS3QQ63_MebtoBr_v9hDRjVa-EocSL7arKHmPNSF92ema1rtxoNGzeiCwIuncVT3/exec";
 
     const phoneForm = document.getElementById("phoneForm");
     const phoneInput = document.getElementById("phoneInput");
@@ -255,7 +255,7 @@
       const formData = new FormData();
       formData.append("phone", phone);
 
-      fetch(SCRIPT_URL, {
+      fetch(SCRIPT_, {
         method: "POST",
         mode: "no-cors",
         body: formData
@@ -330,3 +330,4 @@
   </script>
 </body>
 </html>
+
