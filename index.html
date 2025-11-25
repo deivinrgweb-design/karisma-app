@@ -134,53 +134,52 @@
       color: black;
       cursor: pointer;
     }
+
     .result {
-  margin-top: 18px;
-  padding: 12px 10px;
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(0, 201, 200, 0.4);
-  text-align: center;
-  transform: translateY(8px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
-}
+      margin-top: 18px;
+      padding: 12px 10px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(0, 201, 200, 0.4);
+      text-align: center;
+      transform: translateY(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    }
 
-.result.visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
+    .result.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
 
-.result-message {
-  font-size: 1rem;
-  margin-bottom: 6px;
-}
+    .result-message {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
 
-.result-message span {
-  color: var(--karisma-turquoise);
-  font-weight: 600;
-}
+    .result-message span {
+      color: var(--karisma-turquoise);
+      font-weight: 600;
+    }
 
-.result-coupon {
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(0, 201, 200, 0.08);
-  border: 1px dashed rgba(0, 201, 200, 0.5);
-  display: inline-block;
-  margin-top: 4px;
-}
+    .result-coupon {
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0, 201, 200, 0.08);
+      border: 1px dashed rgba(0, 201, 200, 0.5);
+      display: inline-block;
+      margin-top: 4px;
+    }
 
-.result-coupon-code {
-  font-weight: 700;
-  color: var(--karisma-turquoise);
-}
-
-
+    .result-coupon-code {
+      font-weight: 700;
+      color: var(--karisma-turquoise);
+    }
   </style>
 </head>
 
@@ -211,119 +210,123 @@
       </section>
 
       <section id="result" class="result">
-  <p class="result-message"></p>
-  <p class="result-coupon">
-    Codice sconto: <span class="result-coupon-code"></span>
-  </p>
-  <p class="result-note" style="font-size:0.7rem; opacity:0.7; margin-top:4px;">
-    Mostra questo codice in cassa o inseriscilo al checkout.
-  </p>
-</section>
-
+        <p class="result-message"></p>
+        <p class="result-coupon">
+          Codice sconto: <span class="result-coupon-code"></span>
+        </p>
+        <p class="result-note" style="font-size:0.7rem; opacity:0.7; margin-top:4px;">
+          Mostra questo codice in cassa o inseriscilo al checkout.
+        </p>
+      </section>
     </div>
   </div>
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHxS3QQ63_MebtoBr_v9hDRjVa-EocSL7arKHmPNSF92ema1rtxoNGzeiCwIuncVT3/exec";
+  <script>
+    // 🔗 Inserisci qui l'URL della tua Web App di Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHxS3QQ63_MebtoBr_v9hDRjVa-EocSL7arKHmPNSF92ema1rtxoNGzeiCwIuncVT3/exec";
 
-const phoneForm = document.getElementById("phoneForm");
-const phoneInput = document.getElementById("phoneInput");
-const phoneError = document.getElementById("phoneError");
-const slotSection = document.getElementById("slotSection");
+    const phoneForm = document.getElementById("phoneForm");
+    const phoneInput = document.getElementById("phoneInput");
+    const phoneError = document.getElementById("phoneError");
+    const slotSection = document.getElementById("slotSection");
 
-const spinButton = document.getElementById("spinButton");
-const resultBox = document.getElementById("result");
-const resultMessageEl = document.querySelector(".result-message");
-const resultCouponCodeEl = document.querySelector(".result-coupon-code");
-const reels = document.querySelectorAll(".reel");
+    const spinButton = document.getElementById("spinButton");
+    const resultBox = document.getElementById("result");
+    const resultMessageEl = document.querySelector(".result-message");
+    const resultCouponCodeEl = document.querySelector(".result-coupon-code");
+    const reels = document.querySelectorAll(".reel");
 
-// ----------- LOADING SUL FORM ----------
-phoneForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+    // ----------- INVIO TELEFONO ----------
+    phoneForm.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-  const phone = phoneInput.value.trim();
-  if (phone.length < 5) {
-    phoneError.style.display = "block";
-    return;
-  }
-  phoneError.style.display = "none";
+      const phone = phoneInput.value.trim();
+      if (phone.length < 5) {
+        phoneError.style.display = "block";
+        return;
+      }
+      phoneError.style.display = "none";
 
-  const btn = phoneForm.querySelector("button");
-  btn.disabled = true;
-  btn.textContent = "Caricamento...";
+      const btn = phoneForm.querySelector("button");
+      btn.disabled = true;
+      btn.textContent = "Caricamento...";
 
-  // FIXATO: fetch corretto
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({ phone })
-  });
+      // Invia come form-data (modo più semplice per Apps Script)
+      const formData = new FormData();
+      formData.append("phone", phone);
 
-  // vai alla slot subito
-  phoneForm.style.display = "none";
-  slotSection.style.display = "block";
-});
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      }).catch(() => {
+        // anche se va in errore di rete non blocchiamo il gioco
+      });
 
-// ----------- SLOT MACHINE -----------
-const SYMBOLS = [
-  { name: "Logo Karisma (gadget esclusivo)", icon: "🌀" },
-  { name: "Pallone da calcio Karisma", icon: "⚽️" },
-  { name: "Scarpe sport Karisma", icon: "👟" },
-  { name: "Sconto 10%", icon: "💸" },
-  { name: "Calzettoni tecnici", icon: "🧦" },
-  { name: "Mystery Box Karisma", icon: "🎁" }
-];
-
-const COUPON_CODES = ["KARISMA10", "KARISMA-SPORT", "KARISMA-TEAM", "WIN-KARISMA", "KARISMA2025"];
-
-let spinning = false;
-let spinIntervals = [];
-
-spinButton.addEventListener("click", () => {
-  if (spinning) return;
-  spinning = true;
-
-  resultBox.classList.remove("visible");
-  spinIntervals = [];
-
-  reels.forEach(reel => {
-    reel.classList.add("spinning");
-
-    const symbolSpan = reel.querySelector(".symbol");
-
-    const interval = setInterval(() => {
-      const randomSymbol = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
-      symbolSpan.textContent = randomSymbol.icon;
-    }, 80);
-
-    spinIntervals.push(interval);
-  });
-
-  const winner = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
-  const coupon = COUPON_CODES[Math.floor(Math.random()*COUPON_CODES.length)];
-
-  setTimeout(() => {
-    spinIntervals.forEach(clearInterval);
-    spinIntervals = [];
-
-    reels.forEach(reel => {
-      reel.classList.remove("spinning");
-      reel.querySelector(".symbol").textContent = winner.icon;
+      // mostra subito la slot
+      phoneForm.style.display = "none";
+      slotSection.style.display = "block";
     });
 
-    resultMessageEl.innerHTML = "Hai vinto: <span>" + winner.name + "</span>";
-    resultCouponCodeEl.textContent = coupon;
-    resultBox.classList.add("visible");
+    // ----------- SLOT MACHINE -----------
+    const SYMBOLS = [
+      { name: "Logo Karisma (gadget esclusivo)", icon: "🌀" },
+      { name: "Pallone da calcio Karisma", icon: "⚽️" },
+      { name: "Scarpe sport Karisma", icon: "👟" },
+      { name: "Sconto 10%", icon: "💸" },
+      { name: "Calzettoni tecnici", icon: "🧦" },
+      { name: "Mystery Box Karisma", icon: "🎁" }
+    ];
 
-    spinning = false;
-  }, 1500);
-});
-</script>
+    const COUPON_CODES = [
+      "KARISMA10",
+      "KARISMA-SPORT",
+      "KARISMA-TEAM",
+      "WIN-KARISMA",
+      "KARISMA2025"
+    ];
 
+    let spinning = false;
+    let spinIntervals = [];
+
+    spinButton.addEventListener("click", () => {
+      if (spinning) return;
+      spinning = true;
+
+      resultBox.classList.remove("visible");
+      spinIntervals = [];
+
+      reels.forEach(reel => {
+        reel.classList.add("spinning");
+        const symbolSpan = reel.querySelector(".symbol");
+
+        const interval = setInterval(() => {
+          const randomSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+          symbolSpan.textContent = randomSymbol.icon;
+        }, 80);
+
+        spinIntervals.push(interval);
+      });
+
+      const winner = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+      const coupon = COUPON_CODES[Math.floor(Math.random() * COUPON_CODES.length)];
+
+      setTimeout(() => {
+        spinIntervals.forEach(clearInterval);
+        spinIntervals = [];
+
+        reels.forEach(reel => {
+          reel.classList.remove("spinning");
+          reel.querySelector(".symbol").textContent = winner.icon;
+        });
+
+        resultMessageEl.innerHTML = "Hai vinto: <span>" + winner.name + "</span>";
+        resultCouponCodeEl.textContent = coupon;
+        resultBox.classList.add("visible");
+
+        spinning = false;
+      }, 1500);
+    });
+  </script>
 </body>
 </html>
-
-
-
-
-
