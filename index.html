@@ -180,11 +180,49 @@
       font-weight: 700;
       color: var(--karisma-turquoise);
     }
+
+    #confettiContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 6px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--karisma-turquoise);
+  opacity: 0.9;
+  animation: confettiFall 1.6s linear forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* glow ai rulli durante lo spin */
+.reel.spinning {
+  box-shadow: 0 0 14px rgba(0, 201, 200, 0.7);
+}
+
+    
   </style>
 </head>
 
 <body>
   <div class="app">
+    <div id="confettiContainer"></div>
     <h1 class="app-title">Slot <span>Karisma</span></h1>
 
     <form id="phoneForm">
@@ -236,6 +274,7 @@
   const resultCouponCodeEl = document.querySelector(".result-coupon-code");
   const resultCouponEl = document.querySelector(".result-coupon");
   const reels = document.querySelectorAll(".reel");
+  const confettiContainer = document.getElementById("confettiContainer");
 
   // ----------- INVIO TELEFONO ----------
   phoneForm.addEventListener("submit", (e) => {
@@ -364,10 +403,47 @@
       spinning = false;
     }, 1500);
   });
+
+    function launchConfetti() {
+  if (!confettiContainer) return;
+
+  const confettiCount = 40;
+
+  for (let i = 0; i < confettiCount; i++) {
+    const confetto = document.createElement("div");
+    confetto.classList.add("confetti-piece");
+
+    const left = Math.random() * 100; // %
+    const delay = Math.random() * 0.4; // s
+    const duration = 1.2 + Math.random() * 0.7; // s
+
+    confetto.style.left = left + "%";
+    confetto.style.animationDelay = delay + "s";
+    confetto.style.animationDuration = duration + "s";
+
+    // qualche colore casuale (sempre in palette)
+    const rand = Math.random();
+    if (rand < 0.33) {
+      confetto.style.background = "#00c9c8";
+    } else if (rand < 0.66) {
+      confetto.style.background = "#ffffff";
+    } else {
+      confetto.style.background = "#00a3a2";
+    }
+
+    confettiContainer.appendChild(confetto);
+
+    setTimeout(() => {
+      confetto.remove();
+    }, (delay + duration) * 1000);
+  }
+}
+
 </script>
 
 </body>
 </html>
+
 
 
 
